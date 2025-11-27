@@ -4,6 +4,7 @@ import { apiError } from "../utils/apiErrorHandler.js";
 import User, { type IUser } from "../models/User.model.js";
 import { ApiResponse } from "../utils/apiResponseHandler.js";
 import fs from "fs";
+import path from "path";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import Todo from "../models/Todo.model.js";
@@ -60,11 +61,15 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
         throw new apiError(500, "internal server error in registering a user")
     };
 
-    //creating log
-    fs.appendFileSync('../../logs/userRegisterLogs.txt', `User Registered: Email:${createdUser.email} and Username:${createdUser.username}  at ${new Date().toISOString()}\n`);
+    // Ensure logs directory exists and write log using absolute path
+    const logsDir = path.resolve(process.cwd(), "logs");
+    fs.mkdirSync(logsDir, { recursive: true });
+    const registerLogPath = path.join(logsDir, "userRegisterLogs.txt");
+    fs.appendFileSync(registerLogPath, `User Registered: Email:${createdUser.email} and Username:${createdUser.username}  at ${new Date().toISOString()}\n`);
 
     return res.status(201).json(new ApiResponse(201, createdUser, "user created successfully"));
 })
+
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
     //get user data form req.body
@@ -110,7 +115,8 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
         .json(
             new ApiResponse(200, userData, "user logged in successfully")
         )
-})
+});
+
 const logOutUser = asyncHandler(async (req: Request, res: Response) => {
     const user = req.user;
     await User.findByIdAndUpdate(user?._id, {
@@ -126,7 +132,11 @@ const logOutUser = asyncHandler(async (req: Request, res: Response) => {
         httpOnly:true,
         secure:true
     };
-    fs.appendFileSync("../../logs/userLogoutlogs.txt", `User Logged Out: Email:${user?.email} and Username:${user?.username}  at ${new Date().toISOString()}\n`);
+    // Ensure logs directory exists and append logout entry using absolute path
+    const logsDir = path.resolve(process.cwd(), "logs");
+    fs.mkdirSync(logsDir, { recursive: true });
+    const logoutLogPath = path.join(logsDir, "userLogoutlogs.txt");
+    fs.appendFileSync(logoutLogPath, `User Logged Out: Email:${user?.email} and Username:${user?.username}  at ${new Date().toISOString()}\n`);
 
     return res
     .status(200)
@@ -143,12 +153,11 @@ const getCurrentUser = asyncHandler(async (req:Request, res:Response) => {
 
 const updateUserPassword = asyncHandler(async(req:Request,res:Response)=>{
     const user = req.user;
-    const { oldPassword,newPassword } = req.body;
+    const { newPassword } = req.body;
     const validatePassword = z.object({
-        oldPassword: z.string().min(6).max(100),
         newPassword: z.string().min(6).max(100)
     });
-    const validatedData = validatePassword.parse({ oldPassword, newPassword });
+    const validatedData = validatePassword.parse({  newPassword });
     if (!validatedData) {
         return res.status(400).json(new apiError(400, "Invalid password data"));
     };

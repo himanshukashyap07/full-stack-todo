@@ -8,8 +8,10 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 
-router.route("/")
-    .post(registerUser)
+router.route("/register")
+    .post(registerUser);    
+
+router.route("/current-user")
     .get(verifyJWT,getCurrentUser);
 
 router.route("/login").post(loginUser);

@@ -37,7 +37,9 @@ const DeleteTodo = asyncHandler(async (req:Request,res:Response)=>{
     if(!todoId || !mongoose.Types.ObjectId.isValid(todoId)){
         return res.status(400).json(new apiError(400,"invalid todo id"));
     };
-    const deleteTodo = await Todo.findByIdAndDelete(todoId);
+   const id = new mongoose.Types.ObjectId(todoId);
+
+    const deleteTodo = await Todo.findByIdAndDelete(id);
     if(!deleteTodo){
         return res.status(400).json(new apiError(400,"Error in deleting todo"));
     };
@@ -58,8 +60,8 @@ const updateTodo = asyncHandler(async (req:Request,res:Response)=>{
    if (!validateData) {
     return res.status(400).json(new apiError(400,"content is not in formate"));
    };
-
-   const updatedTodo = await Todo.findByIdAndUpdate({todoId},{
+   const id = new mongoose.Types.ObjectId(todoId);
+   const updatedTodo = await Todo.findByIdAndUpdate(id,{
     $set:{
         content:validateData.content
     }
@@ -78,14 +80,16 @@ const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
     if(!todoId || !mongoose.Types.ObjectId.isValid(todoId)){
         return res.status(400).json(new apiError(400,"invalid todo id"));
     };
+   const id = new mongoose.Types.ObjectId(todoId);
 
-    const toggleIsCompelete = await Todo.findById({todoId});
+
+    const toggleIsCompelete = await Todo.findById(id);
 
     if (!toggleIsCompelete) {
         return res.status(404).json(new apiError(404,"todo is not found"));
     };
     if (toggleIsCompelete.isCompleted) {
-        const todo = await Todo.findByIdAndUpdate({todoId},{
+        const todo = await Todo.findByIdAndUpdate(id,{
             $set:{
                 isCompleted:false
             }
@@ -93,9 +97,9 @@ const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
         if (!todo) {
             return res.status(400).json(new apiError(400,"todo is not updated"));
         }
-        return res.status(200).json(new ApiResponse(200,"toggle successfull"));
+        return res.status(200).json(new ApiResponse(200,"toggle successfull false is complete"));
     }else{
-        const todo = await Todo.findByIdAndUpdate({todoId},{
+        const todo = await Todo.findByIdAndUpdate(id,{
             $set:{
                 isCompleted:true
             }
@@ -103,7 +107,7 @@ const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
         if (!todo) {
             return res.status(400).json(new apiError(400,"todo is not updated"));
         }
-        return res.status(200).json(new ApiResponse(200,"toggle successfull"));
+        return res.status(200).json(new ApiResponse(200,"toggle successfull true is complete"));
     }
 })
 

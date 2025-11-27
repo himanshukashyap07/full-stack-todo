@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import type { NextFunction } from "express";
 
 export interface IUser extends Document {
     username: string;
@@ -47,10 +48,9 @@ const userSchema: Schema = new Schema({
 }, { timestamps: true });
 
 
-userSchema.pre<IUser>('save', async function (next: any) {
-  if (!this.isModified('password')) return next();
+userSchema.pre<IUser>('save', async function () {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 userSchema.methods.isPasswordCorrect = async function(password: string): Promise<boolean> {

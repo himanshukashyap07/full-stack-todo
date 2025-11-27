@@ -7,11 +7,12 @@ const router = Router();
 
 router.use(verifyJWT);
 
-router.route("/")
+router.route("/createTodo")
     .post(createTodo)
-router.route("/:todoId")
-    .delete(DeleteTodo)
+router.route("/updateTodo/:todoId")
     .patch(updateTodo);
+router.route("/deleteTodo/:todoId")
+    .delete(DeleteTodo)
 router.route("/toggleTodoComplete/:todoId")
     .patch(toggelIsTodoCompelete);
 
