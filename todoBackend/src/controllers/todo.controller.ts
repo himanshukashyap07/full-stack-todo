@@ -33,7 +33,7 @@ const createTodo = asyncHandler(async(req:Request,res:Response)=>{
 });
 
 const DeleteTodo = asyncHandler(async (req:Request,res:Response)=>{
-    const todoId = req.params.id;
+    const {todoId} = req.params;
     if(!todoId || !mongoose.Types.ObjectId.isValid(todoId)){
         return res.status(400).json(new apiError(400,"invalid todo id"));
     };
@@ -47,7 +47,7 @@ const DeleteTodo = asyncHandler(async (req:Request,res:Response)=>{
 
 const updateTodo = asyncHandler(async (req:Request,res:Response)=>{
     const {content} = req.body;
-    const todoId = req.params.id;
+    const {todoId} = req.params;
     if(!todoId || !mongoose.Types.ObjectId.isValid(todoId)){
         return res.status(400).json(new apiError(400,"invalid todo id"));
     };
@@ -74,7 +74,7 @@ const updateTodo = asyncHandler(async (req:Request,res:Response)=>{
 })
 
 const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
-    const todoId = req.params.Id;
+    const {todoId} = req.params;
     if(!todoId || !mongoose.Types.ObjectId.isValid(todoId)){
         return res.status(400).json(new apiError(400,"invalid todo id"));
     };
