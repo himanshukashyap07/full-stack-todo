@@ -1,0 +1,25 @@
+{
+  "name": "todobackend",
+  "version": "1.0.0",
+  "description": "this is a backend for the todo appllication",
+  "license": "ISC",
+  "author": "Himanshu kashyap",
+  "type": "module",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "start": "node dist/index",
+    "dev":"tsc-watch --onSuccess \"node ./dist/index.js\"",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.0.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "tsc-watch": "^7.2.0",
+    "typescript": "^5.9.3"
+  }
+}
