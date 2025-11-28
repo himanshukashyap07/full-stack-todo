@@ -43,11 +43,11 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = validateUser.parse({ username, email, password });
 
     if (!validatedData) {
-        return res.status(400).json(new apiError(400, "Invalid user data"));
+        throw new apiError(400, "Invalid user data");
     };
     const existingUser = await User.findOne({ email: validatedData.email });
     if (existingUser) {
-        return res.status(400).json(new apiError(400, "User already exists"));
+        throw new apiError(400, "User already exists");
     };
     const newUser = new User(validatedData);
 
@@ -86,11 +86,11 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
     });
     const validatedData = validateUser.parse({ email, password });
     if (!validatedData) {
-        return res.status(400).json(new apiError(400, "Invalid user data"));
+        throw new apiError(400, "Invalid user data");
     };
     const user: IUser = await User.findOne({ email: validatedData.email }).select("+password +refreshToken");
     if (!user) {
-        return res.status(404).json(new apiError(404, "User not found"));
+        throw new apiError(404, "User not found");
     };
     const isPasswordMatch = await user.isPasswordCorrect(validatedData.password);
     if (!isPasswordMatch) {
@@ -160,17 +160,17 @@ const updateUserPassword = asyncHandler(async(req:Request,res:Response)=>{
     });
     const validatedData = validatePassword.parse({oldPassword, newPassword });
     if (!validatedData) {
-        return res.status(400).json(new apiError(400, "Invalid password data"));
+        throw new apiError(400, "Invalid password data");
     };
     if (validatedData.oldPassword === validatedData.newPassword) {
         
-        return res.status(400).json(new apiError(400, "oldpassword is equal to new password"));
+        throw new apiError(400, "oldpassword is equal to new password");
     }
     const getUser = await User.findById(user?._id).select("+password")
     
     const isCorrectPassword = await getUser?.isPasswordCorrect(validatedData.oldPassword)
     if (!isCorrectPassword) {
-        return res.status(400).json(new apiError(400, "oldpassword is not match to saved password"));
+        throw new apiError(400, "oldpassword is not match to saved password");
     }
 
     await User.findByIdAndUpdate({
@@ -193,7 +193,7 @@ const getAllTodos = asyncHandler(async (req:Request,res:Response)=>{
         }
     ]);
     if(!todos){
-        return res.status(404).json(new apiError(404,"todos not found for this user"));
+        throw new apiError(404,"todos not found for this user");
     };
     return res.status(200).json(new ApiResponse(200,todos,"todos fetched successfully"));
 })

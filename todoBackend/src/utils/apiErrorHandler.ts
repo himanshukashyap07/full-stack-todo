@@ -1,9 +1,11 @@
+
 class apiError extends Error {
     statusCode: number;
     data: null;
     message: string;
     success: boolean;
     errors: any[];
+
 
     constructor(
         statusCode: number,

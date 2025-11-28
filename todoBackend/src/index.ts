@@ -1,6 +1,7 @@
 
 import { app } from "./app.js";
 import connectDB from "./db/ConnectToDB.js";
+import { apiError } from "./utils/apiErrorHandler.js";
 
 
 const PORT = process.env.PORT;
@@ -10,7 +11,7 @@ connectDB().then((): void => {
     });
     server.on("error", (error: Error): void => {
         console.log("Error occurred in the server run.");
-        throw error;
+        throw new apiError(500,"database is not connected")
     });
 }).catch((): void => {
     console.log("mongodb connection failed");
