@@ -61,7 +61,6 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
         throw new apiError(500, "internal server error in registering a user")
     };
 
-    // Ensure logs directory exists and write log using absolute path
     const logsDir = path.resolve(process.cwd(), "logs");
     fs.mkdirSync(logsDir, { recursive: true });
     const registerLogPath = path.join(logsDir, "userRegisterLogs.txt");
@@ -99,7 +98,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
     const { accessToken, refreshToken } = await genrateAccessAndRefershToken(user._id);
 
-    const userData = await User.findById(user._id).select("-refreshToken -password");
+    const userData = await User.findById(user._id).select(" -password");
     if (!userData) {
         throw new apiError(500, "internal server error in loging a user")
     };

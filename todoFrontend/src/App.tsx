@@ -1,15 +1,19 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Signup from "./app/User/SignupUser";
+import Dashboard from "./app/Dashboard"
+import Signin from "./app/User/SigninUser";
+import ChangePassword from "./app/User/ChangePassword";
+import { ProtectedRoute, PublicRoute } from "./api/AuthMiddleware";
 
-function App() {
-
+export default function App() {
   return (
-    <>
-      <div className='bg-red-300 font-semibold text-5xl text-center'>
-        Hello Todo
-      </div>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PublicRoute><Signup /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Signin/></PublicRoute>}/>
+        <Route path="/change-password" element={<ProtectedRoute><ChangePassword/></ProtectedRoute>}/>
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App

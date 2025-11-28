@@ -19,17 +19,17 @@ const createTodo = asyncHandler(async(req:Request,res:Response)=>{
     throw new apiError(400,"content is not in formate");
    };
 
-   const todo:ITODO = await Todo.create({
+   const todo: ITODO = await Todo.create({
     content:validateData.content,
     owner:user._id
    });
+   const todoCreated = await Todo.findById(todo._id).select("-owner");
 
-   if(!todo){
+   if(!todoCreated){
     throw new apiError(500,"failed to create todo");
    };
 
-   return res.status(201).json(new ApiResponse(201,todo,"todo created successfully"));
-
+   return res.status(201).json(new ApiResponse(201,todoCreated,"todo created successfully"));
 });
 
 const DeleteTodo = asyncHandler(async (req:Request,res:Response)=>{
@@ -97,7 +97,7 @@ const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
         if (!todo) {
             throw new apiError(400,"todo is not updated");
         }
-        return res.status(200).json(new ApiResponse(200,"toggle successfull false is complete"));
+        return res.status(200).json(new ApiResponse(200,todo,"toggle successfull false is complete"));
     }else{
         const todo = await Todo.findByIdAndUpdate(id,{
             $set:{
@@ -107,7 +107,7 @@ const toggelIsTodoCompelete = asyncHandler(async(req:Request,res:Response)=>{
         if (!todo) {
             throw new apiError(400,"todo is not updated");
         }
-        return res.status(200).json(new ApiResponse(200,"toggle successfull true is complete"));
+        return res.status(200).json(new ApiResponse(200,todo,"toggle successfull true is complete"));
     }
 })
 
