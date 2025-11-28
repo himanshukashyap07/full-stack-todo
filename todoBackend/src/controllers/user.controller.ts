@@ -153,14 +153,26 @@ const getCurrentUser = asyncHandler(async (req:Request, res:Response) => {
 
 const updateUserPassword = asyncHandler(async(req:Request,res:Response)=>{
     const user = req.user;
-    const { newPassword } = req.body;
+    const { oldPassword,newPassword } = req.body;
     const validatePassword = z.object({
-        newPassword: z.string().min(6).max(100)
+        newPassword: z.string().min(6).max(100),
+        oldPassword: z.string().min(6).max(100)
     });
-    const validatedData = validatePassword.parse({  newPassword });
+    const validatedData = validatePassword.parse({oldPassword, newPassword });
     if (!validatedData) {
         return res.status(400).json(new apiError(400, "Invalid password data"));
     };
+    if (validatedData.oldPassword === validatedData.newPassword) {
+        
+        return res.status(400).json(new apiError(400, "oldpassword is equal to new password"));
+    }
+    const getUser = await User.findById(user?._id).select("+password")
+    
+    const isCorrectPassword = await getUser?.isPasswordCorrect(validatedData.oldPassword)
+    if (!isCorrectPassword) {
+        return res.status(400).json(new apiError(400, "oldpassword is not match to saved password"));
+    }
+
     await User.findByIdAndUpdate({
         _id: user?._id
     },{
